@@ -10,17 +10,8 @@ begin
   OpenTelemetry::SDK.configure do |c|
     c.service_name = "year-ruby"
 
-    # enable all auto-instrumentation available
+    # Enable all auto-instrumentation available
     c.use_all()
-
-    # Because we tinkered with the pipeline, we'll need to
-    # wire up span batching and sending via OTLP ourselves.
-    # This is usually the default.
-    #c.add_span_processor(
-    #  OpenTelemetry::SDK::Trace::Export::BatchSpanProcessor.new(
-    #    OpenTelemetry::Exporter::OTLP::Exporter.new()
-    #  )
-    #)
   end
 rescue OpenTelemetry::SDK::ConfigurationError => e
   puts "What now?"
@@ -33,11 +24,12 @@ class App < Grape::API
   format :txt
 
   get :year do
+    # Starting a span in context of trace
     Tracer.in_span("🗓 get-a-year ✨") do
       sleep rand(0..0.005)
       year = (2015..2020).to_a.sample
       
-      # a span event!
+      # Adding a span event
       current_span = OpenTelemetry::Trace.current_span
       current_span.set_attribute("random.year", year)
       year
