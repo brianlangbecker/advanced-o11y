@@ -1,1 +1,8 @@
 docker_compose("./docker-compose.yml")
+
+local_resource("poke",
+	cmd="curl localhost:6001/year",
+	auto_init=False,
+	trigger_mode=TRIGGER_MODE_MANUAL,
+)
+
