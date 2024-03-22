@@ -1,4 +1,4 @@
-# the very basics
+# SPDX-License-Identifier: Apache-2.0
 
 require "bundler/setup"
 Bundler.require
@@ -11,5 +11,8 @@ class App < Grape::API
     (2015..2020).to_a.sample
   end
 end
+if
 
+          else
+end
 run App

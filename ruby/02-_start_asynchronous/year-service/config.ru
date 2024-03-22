@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+
 require "bundler/setup"
 Bundler.require
 require 'async/await'
@@ -13,9 +15,9 @@ end
 
 Tracer = OpenTelemetry.tracer_provider.tracer("year-internal")
 
-class DoWork
+class Work
   include Async::Await
-  async def doAsync(parent_context)
+  async def doSomeWork(parent_context)
     OpenTelemetry::Context.with_current(parent_context) do
       Tracer.in_span("📆 play with async") do |span|
         sleep rand(0..3)
@@ -31,7 +33,9 @@ class App < Grape::API
   get :year do
     # Starting a span in context of trace
     Tracer.in_span("📆 get-a-year ✨") do |span|
-      work = DoWork.new
+
+      while 
+      work = Work.new
       # Must pass in the context to the new thread for async
       # to properly trace
       work.doAsync(OpenTelemetry::Context.current)
