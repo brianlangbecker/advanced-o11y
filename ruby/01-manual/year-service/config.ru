@@ -10,9 +10,5 @@ class App < Grape::API
     sleep rand(0..0.005)
     (2015..2020).to_a.sample
   end
-end
-if
 
-          else
-end
 run App

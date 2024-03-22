@@ -6,17 +6,22 @@ require 'opentelemetry/sdk'
 require 'opentelemetry/exporter/otlp'
 require 'opentelemetry/instrumentation/all'
 
-OpenTelemetry::SDK.configure do |c|
-  c.service_name = 'year-ruby'
-  # Enable all auto-instrumentation available
-  c.use_all
+begin
+  OpenTelemetry::SDK.configure do |c|
+    c.service_name = 'year-ruby'
+    # Enable all auto-instrumentation available
+    c.use_all
+  end
+rescue OpenTelemetry::SDK::ConfigurationError => e
+  puts 'What now?'
+  puts e.inspect
 end
 
 Tracer = OpenTelemetry.tracer_provider.tracer('year-internal')
 
 class Worker
   def self.do_some_work
-    self.new.do_some_work
+    new.do_some_work
   end
 
   def do_some_work
@@ -39,7 +44,6 @@ class Worker
       else
         span.add_event('Lock already in use, skipping work')
       end
-
     end
   end
 
@@ -56,7 +60,7 @@ class Worker
   end
 
   def add_recursive_span(depth, max_depth)
-    Tracer.in_span('generated-span', attributes: { "depth" => depth }) do
+    Tracer.in_span('generated-span', attributes: { 'depth' => depth }) do
       sleep_randomly(250)
       add_recursive_span(depth + 1, max_depth) if depth < max_depth
     end
@@ -67,7 +71,7 @@ class Worker
   end
 
   def get_random_int(max)
-    rand(1..max).tap {|i| OpenTelemetry::Trace.current_span.set_attribute('app.worker.sleep.random_int', i)}
+    rand(1..max).tap { |i| OpenTelemetry::Trace.current_span.set_attribute('app.worker.sleep.random_int', i) }
   end
 end
 

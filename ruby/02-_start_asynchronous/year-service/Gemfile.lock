@@ -11,23 +11,11 @@ GEM
       minitest (>= 5.1)
       mutex_m
       tzinfo (~> 2.0)
-    async (2.9.0)
-      console (~> 1.10)
-      fiber-annotation
-      io-event (~> 1.5, >= 1.5.1)
-      timers (~> 4.1)
-    async-await (0.6.0)
-      async
-      ruby2_keywords
     base64 (0.2.0)
     bigdecimal (3.1.7)
     builder (3.2.4)
     concurrent-ruby (1.2.3)
     connection_pool (2.4.1)
-    console (1.23.6)
-      fiber-annotation
-      fiber-local
-      json
     drb (2.2.1)
     dry-core (1.0.1)
       concurrent-ruby (~> 1.0)
@@ -44,8 +32,6 @@ GEM
       dry-inflector (~> 1.0)
       dry-logic (~> 1.4)
       zeitwerk (~> 2.6)
-    fiber-annotation (0.2.0)
-    fiber-local (1.0.0)
     google-protobuf (3.25.3)
     google-protobuf (3.25.3-aarch64-linux)
     google-protobuf (3.25.3-arm64-darwin)
@@ -63,8 +49,6 @@ GEM
       rack-accept
     i18n (1.14.4)
       concurrent-ruby (~> 1.0)
-    io-event (1.5.1)
-    json (2.7.1)
     minitest (5.22.3)
     mustermann (3.0.0)
       ruby2_keywords (~> 0.0.1)
@@ -282,7 +266,6 @@ GEM
     rack-accept (0.4.5)
       rack (>= 0.4)
     ruby2_keywords (0.0.5)
-    timers (4.3.5)
     tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)
     zeitwerk (2.6.13)
@@ -296,7 +279,6 @@ PLATFORMS
   x86_64-linux
 
 DEPENDENCIES
-  async-await
   grape
   opentelemetry-exporter-otlp
   opentelemetry-instrumentation-all
