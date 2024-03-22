@@ -30,7 +30,7 @@ class Worker
         span.add_event('Got lock, doing work...')
 
         # Running this method in a separate thread will disconnect it from
-        # the current span, so pass in the span's context to that a link can be
+        # the current span, so pass in the span's context so that a link can be
         # made back to it.
         Thread.new { generate_linked_trace(span.context) }.join
 
@@ -44,7 +44,7 @@ class Worker
   end
 
   # When run in a separate thread, spans started in this method will appear
-  # on a separate trace. Pass the content of the span that runs this method
+  # on a separate trace. Pass the context of the span that runs this method
   # in as a parameter to link the two traces.
   def generate_linked_trace(linked_context)
     # link this span to the span that spawned it
