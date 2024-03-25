@@ -78,11 +78,12 @@ end
 class App < Grape::API
   format :txt
   get :year do
+    current_year = Time.now.year
     Tracer.in_span('📆 get-a-year ✨') do |span|
       Worker.do_some_work
 
       sleep rand(0..3)
-      year = (2015..2020).to_a.sample
+      year = (2015..current_year).to_a.sample
       # a span event!
       span.set_attribute('random.year', year)
       year
