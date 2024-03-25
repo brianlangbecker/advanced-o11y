@@ -69,7 +69,7 @@ When you're done, run the following command from the same directory where you ra
 ```shell
 tilt down
 ```
-**NOTE**: if you only cancel the `tilt up` command, or click `Ctrl+c` to exit, docker resources will remain running. If you then try to start up another set of services, **_you will get a port collision_**. `tilt down` removes any resources started by tilt previously. You can also stop and remove any previously running containers via docker desktop.
+**NOTE**: if you only cancel the `tilt up` command, or click `Ctrl+c` to exit, docker resources will remain running. If you then try to start up another set of services, **_you will get a port collision_**. Running `tilt down` removes any resources started by tilt previously. You can also stop and remove any previously running containers via docker desktop as needed.
 
 List of supported languages
 
