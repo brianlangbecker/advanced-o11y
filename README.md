@@ -1,6 +1,10 @@
 # advanced-o11y
 
-Specific environment variables:
+Welcome to the Advanced o11y Ruby demo. Here are some information of how to run it.
+
+In order to run this demo, you need to set certain environment variables in your environment.
+
+Here are the specific environment variables:
 
 - `OTEL_EXPORTER_OTLP_ENDPOINT=https://api.honeycomb.io`
 - `OTEL_EXPORTER_OTLP_HEADERS='x-honeycomb-team=api-key'`
@@ -15,20 +19,42 @@ If using Classic Honeycomb, you'll also need a dataset and must include in the O
 - `HONEYCOMB_DATASET` - The name of the dataset you want to write to
 - `OTEL_EXPORTER_OTLP_HEADERS='x-honeycomb-team=api-key,x-honeycomb-dataset=year-service'`
 
+## Required Softwares
+
+### Docker Desktop and Kubernetes
+In order to run this demo, you may need to install `Docker Desktop` and have its `Kubernetes` enabled. Installing Docker Desktop can be found [here](https://www.docker.com/products/docker-desktop/).
+
+After the installation, go to the settings (gear icon at the top of Docker Desktop), and select Kubernetes on the left pane menu. Then, check `Enable Kubernetes`. The installation may take a few minutes.
+
 ## Running with Tilt
 
+Under the directory `ruby`, you will find a series of directories such as:
+- 01-manual
+- 01-start-manual
+- 02-_start_asynchronous
+- 03-span-events
+- 04-span_links
+- ruby-greeting-services
+
 ### Server apps
-There is a `Tiltfile` to run these services on a local host using <https://tilt.dev/>.
-After installing Tilt, running `tilt up` should spin up all of the services.
+In each directories, there is a `Tiltfile` to run these services on a local host using <https://tilt.dev/>.
+After installing Tilt, you may go into each directories and running the command `tilt up` should spin up the necessary service.
 
 **NOTE**: you need to use tilt version 0.32.2+ otherwise you will get an error
+
 ```
-Docker Compose service "frontend-java" has a relative build path: "./frontend"
+tilt version
+v0.33.11, built 2024-02-15
 ```
 
-This tiltfile utilizes [docker](https://docs.docker.com/desktop/install/mac-install/) and docker compose. You can verify they are installed first by checking `docker version` and `docker compose version` 
+This tiltfile utilizes [docker](https://docs.docker.com/desktop/install/mac-install/) and docker compose. You can verify they are installed first by checking `docker version` and `docker compose version`
 
-The default tilt setup runs the go services.
+```
+docker compose version
+Docker Compose version v2.24.6-desktop.1
+```
+
+The default tilt setup runs the `year-service` service.
 
 To run services:
 
@@ -36,25 +62,23 @@ To run services:
 tilt up 
 ```
 
-When you're done:
+**NOTE**: Pressing `space` key will open up the browser having the tilt ui. You can monitor the service's status conveniently using it.
+
+When you're done, run the following command from the same directory where you ran tile up:
 
 ```shell
 tilt down
 ```
-**NOTE**: if you only cancel the `tilt up` command, docker resources will remain running. If you then try to start up another set of services, you will get a port collision. `tilt down` removes any resources started by tilt previously.
+**NOTE**: if you only cancel the `tilt up` command, or click `Ctrl+c` to exit, docker resources will remain running. If you then try to start up another set of services, **_you will get a port collision_**. Running `tilt down` removes any resources started by tilt previously. You can also stop and remove any previously running containers via docker desktop as needed.
 
 List of supported languages
 
-- `rb`
+- `rb` (ruby)
 
+### Configuring a common set of services
 
-```shell
-tilt up 
-```
-
-To configure a common set of services that are specific to ongoing development, or to override the default option of running all services in go, add a file `tilt_config.json` and specify a group or set of services.
+To configure a common set of services that are specific to ongoing development, or to override the default option of running all services, add a file `tilt_config.json` and specify a group or set of services.
 This file is ignored by git so it can be developer specific and allows running `tilt up` without having to specify further arguments.
-
 
 Example `tilt_config.json` to override go as the default service
 
@@ -72,19 +96,18 @@ Example `tilt_config.json` to override the default with multiple services
 }
 ```
 
-Once running, `curl localhost:6001/year` to get a greeting and a trace!
+### Invoking `year` service
 
-ctrl+c to kill the session, and `tilt down` to spin down all services.
+Once the service is running, run the following command to get a greeting and a trace!
 
-### Client apps
-
-To run the browser app inside of `/web` run
-
-```shell
-tilt up web node 
+```
+curl localhost:6001/year
+2018%
 ```
 
-This will start up the browser app as well as all node backend services. The browser app makes requests to `http://localhost:6001/year` so there has to be a set of backend services running. It could also be any one of our other supported languages (e.g. `py`, `go` etc.)
+You can run it several times to see a random print of year from this year service.
+
+Press ctrl+c to kill the session, and `tilt down` to spin down all services.
 
 ## Running with Docker
 
