@@ -11,6 +11,10 @@ Honeycomb.configure do |config|
   # missing something to ensure it reports
   # config.client = Libhoney::LogClient.new
   # config.debug = true
+  config.http_trace_parser_hook do |env|
+    Honeycomb::W3CPropagation::UnmarshalTraceContext.parse_rack_env env
+  end
+
   config.http_trace_propagation_hook do |env, context|
     Honeycomb::W3CPropagation::MarshalTraceContext.parse_faraday_env env, context
   end
