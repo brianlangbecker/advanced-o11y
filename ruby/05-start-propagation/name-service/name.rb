@@ -22,7 +22,11 @@ names_by_year = {
   2017 => %w[sophia jackson olivia liam emma noah ava aiden isabella lucas],
   2018 => %w[sophia jackson olivia liam emma noah ava aiden isabella caden],
   2019 => %w[sophia liam olivia jackson emma noah ava aiden aira grayson],
-  2020 => %w[olivia noah emma liam ava elijah isabella oliver sophia lucas]
+  2020 => %w[olivia noah emma liam ava elijah isabella oliver sophia lucas],
+  2021 => %w[olivia isabella oliver noah emma liam ava elijah sophia lucas],
+  2022 => %w[olivia liam ava elijah isabella oliver sophia lucas noah emma],
+  2023 => %w[olivia elijah isabella noah emma liam ava oliver sophia lucas],
+  2024 => %w[oliver olivia noah emma liam ava elijah isabella oliver sophia lucas]
 }
 
 get '/name' do
