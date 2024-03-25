@@ -37,7 +37,7 @@ class Worker
         # Running this method in a separate thread will disconnect it from
         # the current span, so pass in the span's context so that a link can be
         # made back to it.
-        Thread.new { generate_linked_trace(span.context) }.join
+        Thread.new { do_some_recursive_work(span.context) }.join
 
         span.add_event('Releasing lock')
         mutex.unlock
@@ -50,28 +50,29 @@ class Worker
   # When run in a separate thread, spans started in this method will appear
   # on a separate trace. Pass the context of the span that runs this method
   # in as a parameter to link the two traces.
-  def generate_linked_trace(linked_context)
+  def do_some_recursive_work(linked_context)
     # link this span to the span that spawned it
     link_to_spawning_span = OpenTelemetry::Trace::Link.new(linked_context)
-    Tracer.in_span('ruby-generated-span', links: [link_to_spawning_span]) do
+    Tracer.in_span('some_recursive_work', links: [link_to_spawning_span]) do
+      do_recursive_work(2, 5)
       sleep_randomly(250)
-      add_recursive_span(2, 5)
     end
   end
 
-  def add_recursive_span(depth, max_depth)
-    Tracer.in_span('generated-span', attributes: { 'depth' => depth }) do
+  def do_recursive_work(depth, max_depth)
+    Tracer.in_span('recursive_work', attributes: { 'depth' => depth }) do
+      do_recursive_work(depth + 1, max_depth) if depth < max_depth
       sleep_randomly(250)
-      add_recursive_span(depth + 1, max_depth) if depth < max_depth
     end
   end
 
   def sleep_randomly(max)
-    sleep(get_random_int(max) / 1000.0)
-  end
-
-  def get_random_int(max)
-    rand(1..max).tap { |i| OpenTelemetry::Trace.current_span.set_attribute('app.worker.sleep.random_int', i) }
+    Tracer.in_span("😴 actually, I'm just sleeping.") do
+      sleep(
+        rand(1..max).tap { |i| OpenTelemetry::Trace.current_span.set_attribute('app.worker.sleep.duration_ms', i) }
+          ./(1000.0)
+      )
+    end
   end
 end
 
