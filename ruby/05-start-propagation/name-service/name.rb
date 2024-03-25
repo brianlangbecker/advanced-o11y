@@ -6,9 +6,14 @@ require 'faraday'
 Honeycomb.configure do |config|
   config.write_key = ENV['HONEYCOMB_API_KEY']
   config.service_name = ENV['SERVICE_NAME'] || 'name-ruby'
-  config.api_host = ENV['HONEYCOMB_API_ENDPOINT']
+  config.dataset = ENV['SERVICE_NAME'] || 'name-ruby'
+  # config.api_host = ENV['HONEYCOMB_API_ENDPOINT']
   # missing something to ensure it reports
-  config.client = Libhoney::LogClient.new
+  # config.client = Libhoney::LogClient.new
+  # config.debug = true
+  config.http_trace_propagation_hook do |env, context|
+    Honeycomb::W3CPropagation::MarshalTraceContext.parse_faraday_env env, context
+  end
 end
 
 use Honeycomb::Sinatra::Middleware, client: Honeycomb.client
@@ -30,14 +35,19 @@ names_by_year = {
 }
 
 get '/name' do
-  year = get_year
-  names = names_by_year[year]
-  names[rand(names.length)]
+  Honeycomb.start_span(name: 'name') do
+    year = get_year
+    names = names_by_year[year]
+    name = names[rand(names.length)]
+    Honeycomb.add_field('name', name)
+    Honeycomb.add_field('year', year)
+    name + " " + year.to_s
+  end
 end
 
 def get_year
   year_service_connection = Faraday.new(ENV['YEAR_ENDPOINT'] || 'http://localhost:6001')
-  Honeycomb.start_span(name: 'honeycomb_trace') do
+  Honeycomb.start_span(name: 'get_year') do
     year_service_response = year_service_connection.get('/year') do |request|
     end
     year_service_response.body.to_i
