@@ -1,0 +1,44 @@
+require 'sinatra'
+require 'honeycomb-beeline'
+require 'honeycomb/propagation/w3c'
+require 'faraday'
+
+Honeycomb.configure do |config|
+  config.write_key = ENV['HONEYCOMB_API_KEY']
+  config.service_name = 'name-ruby'
+  config.api_host = ENV['HONEYCOMB_API_ENDPOINT']
+  config.http_trace_parser_hook do |env|
+    Honeycomb::W3CPropagation::UnmarshalTraceContext.parse_rack_env(env)
+  end
+  config.http_trace_propagation_hook do |env, context|
+    Honeycomb::W3CPropagation::MarshalTraceContext.parse_faraday_env(env, context)
+  end
+  # config.client = Libhoney::LogClient.new
+end
+
+use Honeycomb::Sinatra::Middleware, client: Honeycomb.client
+
+set :bind, '0.0.0.0'
+set :port, 8000
+
+names_by_year = {
+  2015 => %w[sophia jackson emma aiden olivia liam ava lucas mia noah],
+  2016 => %w[sophia jackson emma aiden olivia lucas ava liam mia noah],
+  2017 => %w[sophia jackson olivia liam emma noah ava aiden isabella lucas],
+  2018 => %w[sophia jackson olivia liam emma noah ava aiden isabella caden],
+  2019 => %w[sophia liam olivia jackson emma noah ava aiden aira grayson],
+  2020 => %w[olivia noah emma liam ava elijah isabella oliver sophia lucas]
+}
+
+get '/name' do
+  year = get_year
+  names = names_by_year[year]
+  names[rand(names.length)]
+end
+
+def get_year
+  year_service_connection = Faraday.new(ENV['YEAR_ENDPOINT'] || 'http://localhost:6001')
+  year_service_response = year_service_connection.get('/year') do |request|
+  end
+  year_service_response.body.to_i
+end
