@@ -28,13 +28,18 @@ After the installation, go to the settings (gear icon at the top of Docker Deskt
 
 ## Running with Tilt
 
-Under the directory `ruby`, you will find a series of directories such as:
-- 01-manual
-- 01-start-manual
-- 02-_start_asynchronous
-- 03-span-events
-- 04-span_links
-- ruby-greeting-services
+Under the directory `ruby`, you will find a series of directories. Please refer to the table below to understand what they are and how to use it.
+
+|Directory|Entrypoint (curl)|What it is|
+|---|---|---|
+|01-manual|`curl http://localhost:6001/year`||
+|01-start-manual|`curl http://localhost:6001/year`||
+|02-_start_asynchronous|`curl http://localhost:6001/year`||
+|03-span-events|`curl http://localhost:6001/year`||
+|04-span-links|`curl http://localhost:6001/year`||
+|05-propagation|`curl http://localhost:8000/name`||
+|05-start-propagation|`curl http://localhost:8000/name`||
+|ruby-greeting-services|`curl http://localhost:6001/year`||
 
 ### Server apps
 In each directories, there is a `Tiltfile` to run these services on a local host using <https://tilt.dev/>.

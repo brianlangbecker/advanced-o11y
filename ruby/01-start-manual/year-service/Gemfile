@@ -5,3 +5,4 @@ gem 'opentelemetry-exporter-otlp'
 gem 'opentelemetry-instrumentation-all'
 gem "grape"
 gem "puma"
+gem "async-await"
