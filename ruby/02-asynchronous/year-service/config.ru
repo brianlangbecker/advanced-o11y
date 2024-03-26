@@ -1,5 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 
+require 'async'
 require 'bundler/setup'
 Bundler.require
 require 'opentelemetry/sdk'
@@ -20,25 +21,27 @@ end
 Tracer = OpenTelemetry.tracer_provider.tracer('year-internal')
 
 class Worker
-  def self.do_some_work
-    new.do_some_work
+  def self.do_some_work(span)
+    new.do_some_work(span)
   end
 
-  def do_some_work
-    Tracer.in_span('📆 play with async') do |_span|
-      sleep_randomly(3000)
-      # Running this method in a separate thread will disconnect it from
-      # the current span, so pass in the span's context
-      Thread.new { generate_async(OpenTelemetry::Context.current) }.join
+  def do_some_work(parent_span)
+    n = 4
+    span_context = parent_span.context
+    parent_end = (Time.now + rand(0.1..0.2)).to_f
+    Async do
+      n.times do |i|
+        Async do
+          span = OpenTelemetry::Trace.non_recording_span(span_context)
+          OpenTelemetry::Trace.with_span(span) do
+            Tracer.in_span('Some Async Work ✨ ' + i.to_s) do |span|
+              sleep_randomly(1000)
+            end
+          end
+        end
+      end
     end
-  end
-
-  # When run in a separate thread, spans started in this method will appear
-  # on a separate trace, you ensure they use the parent_context so they stay in the same trace
-  def generate_async(parent_context)
-    OpenTelemetry::Context.with_current(parent_context) do
-      sleep_randomly(250)
-    end
+    parent_span.finish(end_timestamp: parent_end)
   end
 
   def sleep_randomly(max)
@@ -54,15 +57,11 @@ class App < Grape::API
   format :txt
   get :year do
     current_year = Time.now.year
-    Tracer.in_span('📆 get-a-year ✨') do |span|
-      Worker.do_some_work
-
-      sleep rand(0..3)
-      year = (2015..current_year).to_a.sample
-      # a span event!
-      span.set_attribute('random.year', year)
-      year
-    end
+    span = Tracer.start_span('📆 get-a-year ✨')
+    year = (2015..current_year).to_a.sample
+    span.set_attribute('random.year', year)
+    Worker.do_some_work(span)
+    year
   end
 end
 

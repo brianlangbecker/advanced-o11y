@@ -19,6 +19,13 @@ If using Classic Honeycomb, you'll also need a dataset and must include in the O
 - `HONEYCOMB_DATASET` - The name of the dataset you want to write to
 - `OTEL_EXPORTER_OTLP_HEADERS='x-honeycomb-team=api-key,x-honeycomb-dataset=year-service'`
 
+If using Honeycomb Beeline, which is Honeycomb's library to send telemetry easily to Honeycome, the following environments are required:
+
+- `HONEYCOMB_API_KEY=api-key`
+- `HONEYCOMB_API_ENDPOINT=https://api.honeycomb.io`
+- `SERVICE_NAME` - The name of the service you want to write to
+- `HONEYCOMB_DATASET` - The name of the dataset you want to write to (usually same as service name)
+
 ## Required Softwares
 
 ### Docker Desktop and Kubernetes
@@ -32,14 +39,14 @@ Under the directory `ruby`, you will find a series of directories. Please refer 
 
 |Directory|Entrypoint (curl)|What it is|
 |---|---|---|
-|01-manual|`curl http://localhost:6001/year`||
-|01-start-manual|`curl http://localhost:6001/year`||
-|02-_start_asynchronous|`curl http://localhost:6001/year`||
-|03-span-events|`curl http://localhost:6001/year`||
-|04-span-links|`curl http://localhost:6001/year`||
-|05-propagation|`curl http://localhost:8000/name`||
-|05-start-propagation|`curl http://localhost:8000/name`||
-|ruby-greeting-services|`curl http://localhost:6001/year`||
+|01-_original|`curl http://localhost:6001/year`|Year service without any instrumentation|
+|01-auto|`curl http://localhost:6001/year`|Year service having Auto OTEL instrumentation|
+|02-start_asynchronous|`curl http://localhost:6001/year`|Year service with async. child worker|
+|03-span-events|`curl http://localhost:6001/year`|Year service having span events|
+|04-span-links|`curl http://localhost:6001/year`|Year service having span events|
+|05-propagation|`curl http://localhost:8000/name`|Name service with year service, without propagation|
+|05-start-propagation|`curl http://localhost:8000/name`|Name service with year service, with propagation|
+|ruby-greeting-services|`curl http://localhost:6001/year`|Year service with o11y wrapper|
 
 ### Server apps
 In each directories, there is a `Tiltfile` to run these services on a local host using <https://tilt.dev/>.
