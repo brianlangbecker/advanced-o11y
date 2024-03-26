@@ -6,7 +6,7 @@ require 'faraday'
 Honeycomb.configure do |config|
   config.write_key = ENV['HONEYCOMB_API_KEY']
   config.service_name = ENV['SERVICE_NAME'] || 'name-ruby'
-  config.dataset = ENV['SERVICE_NAME'] || 'name-ruby'
+  # config.dataset = ENV['SERVICE_NAME'] || 'name-ruby'
   # config.api_host = ENV['HONEYCOMB_API_ENDPOINT']
   # missing something to ensure it reports
   # config.client = Libhoney::LogClient.new

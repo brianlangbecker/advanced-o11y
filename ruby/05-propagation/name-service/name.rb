@@ -5,14 +5,9 @@ require 'faraday'
 
 Honeycomb.configure do |config|
   config.write_key = ENV['HONEYCOMB_API_KEY']
-  config.service_name = 'name-ruby'
+  config.service_name = ENV['SERVICE_NAME'] || 'name-ruby'
+  # config.dataset = ENV['SERVICE_NAME'] || 'name-ruby'
   config.api_host = ENV['HONEYCOMB_API_ENDPOINT']
-  config.http_trace_parser_hook do |env|
-    Honeycomb::W3CPropagation::UnmarshalTraceContext.parse_rack_env(env)
-  end
-  config.http_trace_propagation_hook do |env, context|
-    Honeycomb::W3CPropagation::MarshalTraceContext.parse_faraday_env(env, context)
-  end
   # config.client = Libhoney::LogClient.new
 end
 

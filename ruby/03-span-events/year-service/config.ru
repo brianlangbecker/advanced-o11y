@@ -70,8 +70,9 @@ class App < Grape::API
 
       sleep rand(0..3)
       year = (2015..current_year).to_a.sample
-      # a span event!
       span.set_attribute('random.year', year)
+      # a span event!
+      span.add_event('log', attributes: {'random.year' => year})
       year
     end
   end
