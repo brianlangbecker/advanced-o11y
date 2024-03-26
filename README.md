@@ -39,9 +39,9 @@ Under the directory `ruby`, you will find a series of directories. Please refer 
 
 |Directory|Entrypoint (curl)|What it is|
 |---|---|---|
-|01-manual|`curl http://localhost:6001/year`|Year service without any instrumentation|
-|01-start-manual|`curl http://localhost:6001/year`|Year service having OTEL instrumentation|
-|02-_start_asynchronous|`curl http://localhost:6001/year`|Year service with async. child worker|
+|01-_original|`curl http://localhost:6001/year`|Year service without any instrumentation|
+|01-auto|`curl http://localhost:6001/year`|Year service having Auto OTEL instrumentation|
+|02-start_asynchronous|`curl http://localhost:6001/year`|Year service with async. child worker|
 |03-span-events|`curl http://localhost:6001/year`|Year service having span events|
 |04-span-links|`curl http://localhost:6001/year`|Year service having span events|
 |05-propagation|`curl http://localhost:8000/name`|Name service with year service, without propagation|
