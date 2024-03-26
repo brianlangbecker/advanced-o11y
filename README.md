@@ -2,6 +2,14 @@
 
 Welcome to the Advanced o11y Ruby demo. Here are some information of how to run it.
 
+## Workshop slides
+
+This workshop is meant to be an instructor led workshop, but that shouldn't prevent anyone from doing the workshop themselves.
+Follow along with the [slides](https://docs.google.com/presentation/d/1-79ehidhZ6BBORatzubkgNpfU9KONSKFE72qPYRKDaw/edit#slide=id.gd9a648ab23_0_203).
+Make sure to read the speaker notes to get full context on the slide content.
+
+## Running demo
+
 In order to run this demo, you need to set certain environment variables in your environment.
 
 Here are the specific environment variables:
@@ -29,7 +37,8 @@ If using Honeycomb Beeline, which is Honeycomb's library to send telemetry easil
 ## Required Softwares
 
 ### Docker Desktop and Kubernetes
-In order to run this demo, you may need to install `Docker Desktop` and have its `Kubernetes` enabled. Installing Docker Desktop can be found [here](https://www.docker.com/products/docker-desktop/).
+
+In order to run this demo, you may need to install `Docker Desktop`. Installing Docker Desktop can be found [here](https://www.docker.com/products/docker-desktop/).
 
 After the installation, go to the settings (gear icon at the top of Docker Desktop), and select Kubernetes on the left pane menu. Then, check `Enable Kubernetes`. The installation may take a few minutes.
 
@@ -37,18 +46,19 @@ After the installation, go to the settings (gear icon at the top of Docker Deskt
 
 Under the directory `ruby`, you will find a series of directories. Please refer to the table below to understand what they are and how to use it.
 
-|Directory|Entrypoint (curl)|What it is|
-|---|---|---|
-|01-_original|`curl http://localhost:6001/year`|Year service without any instrumentation|
-|01-auto|`curl http://localhost:6001/year`|Year service having Auto OTEL instrumentation|
-|02-start_asynchronous|`curl http://localhost:6001/year`|Year service with async. child worker|
-|03-span-events|`curl http://localhost:6001/year`|Year service having span events|
-|04-span-links|`curl http://localhost:6001/year`|Year service having span events|
-|05-propagation|`curl http://localhost:8000/name`|Name service with year service, without propagation|
-|05-start-propagation|`curl http://localhost:8000/name`|Name service with year service, with propagation|
-|ruby-greeting-services|`curl http://localhost:6001/year`|Year service with o11y wrapper|
+| Directory              | Entrypoint (curl)                 | What it is                                          |
+| ---------------------- | --------------------------------- | --------------------------------------------------- |
+| 01-\_original          | `curl http://localhost:6001/year` | Year service without any instrumentation            |
+| 01-auto                | `curl http://localhost:6001/year` | Year service having Auto OTEL instrumentation       |
+| 02-start_asynchronous  | `curl http://localhost:6001/year` | Year service with async. child worker               |
+| 03-span-events         | `curl http://localhost:6001/year` | Year service having span events                     |
+| 04-span-links          | `curl http://localhost:6001/year` | Year service having span events                     |
+| 05-propagation         | `curl http://localhost:8000/name` | Name service with year service, without propagation |
+| 05-start-propagation   | `curl http://localhost:8000/name` | Name service with year service, with propagation    |
+| ruby-greeting-services | `curl http://localhost:6001/year` | Year service with o11y wrapper                      |
 
 ### Server apps
+
 In each directories, there is a `Tiltfile` to run these services on a local host using <https://tilt.dev/>.
 After installing Tilt, you may go into each directories and running the command `tilt up` should spin up the necessary service.
 
@@ -71,7 +81,7 @@ The default tilt setup runs the `year-service` service.
 To run services:
 
 ```shell
-tilt up 
+tilt up
 ```
 
 **NOTE**: Pressing `space` key will open up the browser having the tilt ui. You can monitor the service's status conveniently using it.
@@ -81,6 +91,7 @@ When you're done, run the following command from the same directory where you ra
 ```shell
 tilt down
 ```
+
 **NOTE**: if you only cancel the `tilt up` command, or click `Ctrl+c` to exit, docker resources will remain running. If you then try to start up another set of services, **_you will get a port collision_**. Running `tilt down` removes any resources started by tilt previously. You can also stop and remove any previously running containers via docker desktop as needed.
 
 List of supported languages
@@ -125,5 +136,6 @@ Press ctrl+c to kill the session, and `tilt down` to spin down all services.
 
 You can also run services without Tilt by running docker-compose with the base configuration file and a language-specific configuration file.
 
-
 ```shell
+
+```
