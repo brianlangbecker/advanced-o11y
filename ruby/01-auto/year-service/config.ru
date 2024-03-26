@@ -28,15 +28,15 @@ class App < Grape::API
   get :year do
     # Starting a span in context of trace
     current_year = Time.now.year
-    Tracer.in_span("🗓 get-a-year ✨") do
-      sleep rand(0..0.005)
-      year = (2015..current_year).to_a.sample
-      
-      # Adding a span event
-      current_span = OpenTelemetry::Trace.current_span
-      current_span.set_attribute("random.year", year)
-      year
-    end
+    # Tracer.in_span("🗓 get-a-year ✨") do
+    sleep rand(0..0.005)
+    year = (2015..current_year).to_a.sample
+    
+    # Adding a span event
+    current_span = OpenTelemetry::Trace.current_span
+    current_span.set_attribute("random.year", year)
+    year
+    # end
   end
 
 end
