@@ -5,7 +5,7 @@ Welcome to the Advanced o11y Ruby demo. Here are some information of how to run 
 ## Workshop slides
 
 This workshop is meant to be an instructor led workshop, but that shouldn't prevent anyone from doing the workshop themselves.
-Follow along with the [slides](https://docs.google.com/presentation/d/1-79ehidhZ6BBORatzubkgNpfU9KONSKFE72qPYRKDaw/edit#slide=id.gd9a648ab23_0_203).
+Follow along with the [slides](https://docs.google.com/presentation/d/1-79ehidhZ6BBORatzubkgNpfU9KONSKFE72qPYRKDaw/edit?usp=sharing).
 Make sure to read the speaker notes to get full context on the slide content.
 
 ## Running demo
