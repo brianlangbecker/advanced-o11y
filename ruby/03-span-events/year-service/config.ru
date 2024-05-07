@@ -1,10 +1,14 @@
 # SPDX-License-Identifier: Apache-2.0
 
+# Note this specific exercise does not use the Async libaray in the same was previous library but
+# uses a more realistic example. Nevertheless, this is not the focus of the exercise,
+
 require 'bundler/setup'
 Bundler.require
 require 'opentelemetry/sdk'
 require 'opentelemetry/exporter/otlp'
 require 'opentelemetry/instrumentation/all'
+
 
 begin
   OpenTelemetry::SDK.configure do |c|
@@ -16,7 +20,6 @@ rescue OpenTelemetry::SDK::ConfigurationError => e
   puts 'What now?'
   puts e.inspect
 end
-
 Tracer = OpenTelemetry.tracer_provider.tracer('year-internal')
 
 class Worker

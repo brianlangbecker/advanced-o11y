@@ -1,0 +1,15 @@
+# docker-compose.yml
+version: '3.8'
+
+services:
+  year:
+    build: .
+    ports:
+      - "6001:6001"
+    volumes:
+      - .:/app
+    # Mounts the source code into the container, allowing live updates
+    environment:
+      - APP_ENV=dev
+    # Development environment variables
+

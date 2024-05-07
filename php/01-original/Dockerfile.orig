@@ -1,0 +1,16 @@
+# Dockerfile
+FROM php:8.1-cli
+
+# Install Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+# Install Symfony CLI for local development
+RUN curl -sS https://get.symfony.com/cli/installer | bash && mv /root/.symfony*/bin/symfony /usr/local/bin/symfony
+
+# Install Symfony project dependencies
+COPY . /app
+WORKDIR /app
+RUN composer install
+
+# Set command to run Symfony server
+CMD ["symfony", "server:start", "--no-tls", "--port=8000", "--allow-http"]
