@@ -54,8 +54,8 @@ class YearController extends AbstractController
     {
         $randomYear = $this->getRandomYear();
 
-        //$this->instrumentedNormal();
-        $this->instrumentEasier();
+        $this->instrumentedNormal();
+        //$this->instrumentEasier();
         return new JsonResponse("Go see your traces!");
     }
     function getRandomYear(): int
@@ -115,6 +115,19 @@ class YearController extends AbstractController
 
             $span->end();
         }
+
+        $span = $tracer->spanBuilder('Play with links')->setParent(false)->startSpan();
+
+        // add more tuff
+        $spanContext = $span->getContext();
+        $span->end();
+
+        // Associate it back
+        $span = $tracer->spanBuilder('span-with-link')
+            ->addLink($spanContext)
+            ->startSpan();
+
+        $span->end();
         $root->end();
         $scope->detach();
         echo PHP_EOL . 'OTLP example complete!  ';
@@ -157,18 +170,15 @@ class YearController extends AbstractController
 
         $span = $this->createSpan('Play with links', true);
 
+        // add more tuff
         $spanContext = $span->getContext();
         $span->end();
 
+        // Associate it back
         $span = $this->createSpanWithLink('span-with-link', $spanContext);
         $span->end();
         $scope->detach();
         $root->end();
-
-
-
         return;
     }
-
-
 }
