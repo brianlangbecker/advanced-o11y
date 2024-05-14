@@ -2,6 +2,8 @@
 
 namespace App\Controller;
 
+require __DIR__ . '/../../vendor/autoload.php';
+
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\Response;

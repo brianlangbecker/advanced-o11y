@@ -1,5 +1,5 @@
 # Dockerfile
-FROM composer:latest
+FROM php:latest
 
 # Install Symfony CLI for local development
 RUN curl -sS https://get.symfony.com/cli/installer | bash && mv /root/.symfony*/bin/symfony /usr/local/bin/symfony

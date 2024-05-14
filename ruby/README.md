@@ -14,25 +14,18 @@ In order to run this demo, you need to set certain environment variables in your
 
 Here are the specific environment variables:
 
-- `OTEL_EXPORTER_OTLP_ENDPOINT=https://api.honeycomb.io`
+- `OTEL_EXPORTER_OTLP_ENDPOINT=https://api.honeycomb.io/v1/traces`
 - `OTEL_EXPORTER_OTLP_HEADERS='x-honeycomb-team=api-key'`
 
-If configuring non-prod API endpoint:
+If configuring non-prod API endpoint like a collector:
 
 - `OTEL_EXPORTER_OTLP_ENDPOINT=https://api.some.place`
-- `HONEYCOMB_API_ENDPOINT=https://api.some.place`
+- `OTEL_EXPORTER_OTLP_HEADERS='x-honeycomb-team=api-key,x-honeycomb-dataset=year-ruby'`
 
 If using Classic Honeycomb, you'll also need a dataset and must include in the OTEL headers:
 
-- `HONEYCOMB_DATASET` - The name of the dataset you want to write to
-- `OTEL_EXPORTER_OTLP_HEADERS='x-honeycomb-team=api-key,x-honeycomb-dataset=year-service'`
-
-If using Honeycomb Beeline, which is Honeycomb's library to send telemetry easily to Honeycome, the following environments are required:
-
-- `HONEYCOMB_API_KEY=api-key`
-- `HONEYCOMB_API_ENDPOINT=https://api.honeycomb.io`
-- `SERVICE_NAME` - The name of the service you want to write to
-- `HONEYCOMB_DATASET` - The name of the dataset you want to write to (usually same as service name)
+- `OTEL_EXPORTER_OTLP_ENDPOINT=https://api.honeycomb.io/v1/traces`
+- `OTEL_EXPORTER_OTLP_HEADERS='x-honeycomb-team=api-key,x-honeycomb-dataset=year-ruby'`
 
 ## Required Softwares
 
@@ -44,7 +37,7 @@ After the installation, go to the settings (gear icon at the top of Docker Deskt
 
 ## Running with Tilt
 
-Under the directory `ruby`, you will find a series of directories. Please refer to the table below to understand what they are and how to use it.
+You will find a series of directories. Please refer to the table below to understand what they are and how to use it.
 
 | Directory              | Entrypoint (curl)                 | What it is                                          |
 | ---------------------- | --------------------------------- | --------------------------------------------------- |
@@ -115,8 +108,10 @@ Example `tilt_config.json` to override the default with multiple services
 
 ```json
 {
-  "to-run": ["frontend-node", "message-go", "name-python", "year-rb"]
+  "to-run": ["name-ruby", "year-ruby"]
 }
+```
+
 ```
 
 ### Invoking `year` service
@@ -124,9 +119,11 @@ Example `tilt_config.json` to override the default with multiple services
 Once the service is running, run the following command to get a greeting and a trace!
 
 ```
+
 curl localhost:6001/year
 2018%
-```
+
+````
 
 You can run it several times to see a random print of year from this year service.
 
@@ -138,4 +135,4 @@ You can also run services without Tilt by running docker-compose with the base c
 
 ```shell
 
-```
+````
