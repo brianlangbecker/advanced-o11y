@@ -4,6 +4,8 @@ namespace App\Controller;
 
 require __DIR__ . '/../../vendor/autoload.php';
 
+use React\EventLoop\Factory as LoopFactory;
+use React\Promise\Promise;
 use App\OpenTelemetry\HasTraceableTrait;
 use App\OpenTelemetry\SdkBuilder;
 use OpenTelemetry\API\Signals;
@@ -25,9 +27,13 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
 
+
+
+
 class YearController extends AbstractController
 {
     use HasTraceableTrait;
+
 
     private TracerProvider $tracerProvider;
 
@@ -36,9 +42,13 @@ class YearController extends AbstractController
     #[Route('/year', name: 'app_year')]
     public function index(): JsonResponse
     {
-        $randomYear = $this->getRandomYear();
-
-        $this->instrumentedNormal();
+        $loop = LoopFactory::create();
+        $this->instrumentedNormalAsync($loop);
+        $loop->run();
+        $loop = LoopFactory::create();
+        $this->instrumentedNormalAsync($loop);
+        $loop->run();
+        //$this->instrumentedNormal();
         //$this->instrumentEasier();
         return new JsonResponse("Go see your traces!");
     }
@@ -53,6 +63,7 @@ class YearController extends AbstractController
     // The Normal
     public function instrumentedNormal()
     {
+
         $headers = [];
         $headers = OtlpUtil::getHeaders(Signals::TRACE);
 
@@ -165,4 +176,55 @@ class YearController extends AbstractController
         $root->end();
         return;
     }
+
+
+    public function instrumentedNormalAsync($loop)
+    {
+        $headers = OtlpUtil::getHeaders(\OpenTelemetry\API\Signals::TRACE);
+        $transport = (new OtlpHttpTransportFactory())->create(Configuration::getString(Variables::OTEL_EXPORTER_OTLP_ENDPOINT), 'application/x-protobuf', $headers);
+        $exporter = new SpanExporter($transport);
+
+        $resource = ResourceInfo::create(Attributes::create([
+            ResourceAttributes::SERVICE_NAMESPACE => 'Demo',
+            ResourceAttributes::SERVICE_NAME => 'year-php',
+        ]));
+
+        $tracerProvider = new TracerProvider(
+            spanProcessors: [new BatchSpanProcessor($exporter, ClockFactory::getDefault())],
+            resource: $resource,
+        );
+
+        Sdk::builder()
+            ->setTracerProvider($tracerProvider)
+            ->setPropagator(TraceContextPropagator::getInstance())
+            ->setAutoShutdown(true)
+            ->buildAndRegisterGlobal();
+
+        $tracer = $tracerProvider->getTracer('year-php');
+        $root = $tracer->spanBuilder('root')->startSpan();
+        $scope = $root->activate();
+
+        for ($i = 0; $i < 3; $i++) {
+            $this->createSpanAsync($loop, $tracer, 'loop-' . $i);
+        }
+
+        $loop->addTimer(1.0, function () use ($root, $scope, $tracerProvider) {
+            $root->end();
+            $scope->detach();
+            $tracerProvider->shutdown();
+        });
+    }
+
+    private function createSpanAsync($loop, $tracer, $name)
+    {
+        $loop->addTimer(0.0001, function () use ($tracer, $name) {
+            $span = $tracer->spanBuilder($name)->startSpan();
+            $span->setAttribute('year', $this->getRandomYear());
+            $span->addEvent('some event', ['attributes' => ['key' => 'value']]);
+            $span->end();
+        });
+    }
+
+
 }
+
