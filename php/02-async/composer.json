@@ -20,6 +20,7 @@
         "open-telemetry/symfony-sdk-bundle": "^0.0.24",
         "php-http/httplug": "^2.4",
         "react/event-loop": "^1.5",
+        "react/http": "^1.10",
         "react/promise": "^3.1",
         "symfony/console": "7.0.*",
         "symfony/dotenv": "7.0.*",
