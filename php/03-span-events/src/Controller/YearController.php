@@ -43,17 +43,9 @@ class YearController extends AbstractController
         //$this->instrumentedNormal();
         $this->instrumentEasier();
 
-        $message = "Go see your OpenTelemetry traces in Honeycomb!";
+        $message = "Span events exercise. Go see your OpenTelemetry traces in Honeycomb!";
         return $this->createHtmlResponse($message);
 
-    }
-
-    function getRandomYear(): int
-    {
-        $currentYear = date("Y"); // Get the current year
-        usleep(rand(0, 5000)); // Simulate a small delay
-        $randomYear = rand(2015, $currentYear); // Get a random year between 2015 and current year
-        return $randomYear;
     }
 
     // This the normal way without creating a helper function
@@ -125,6 +117,7 @@ class YearController extends AbstractController
         return;
     }
 
+    // This is the way using helper functions, inspired by Daniel
     function instrumentEasier()
     {
         // Setup tracers, exporters, connection
@@ -167,6 +160,14 @@ class YearController extends AbstractController
         $scope->detach();
         $root->end();
         return;
+    }
+
+    function getRandomYear(): int
+    {
+        $currentYear = date("Y"); // Get the current year
+        usleep(rand(0, 5000)); // Simulate a small delay
+        $randomYear = rand(2015, $currentYear); // Get a random year between 2015 and current year
+        return $randomYear;
     }
 
     private function createHtmlResponse(string $message): Response
