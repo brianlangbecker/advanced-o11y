@@ -43,7 +43,7 @@ class YearController extends AbstractController
         //$this->instrumentedNormal();
         $this->instrumentEasier();
 
-        $message = "Span links exercise. Go see your OpenTelemetry traces in Honeycomb!";
+        $message = "Start propation exercise. Go see your OpenTelemetry traces in Honeycomb!";
         return $this->createHtmlResponse($message);
 
     }

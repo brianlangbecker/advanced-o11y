@@ -4,10 +4,13 @@
 
 const process = require('process');
 const opentelemetry = require("@opentelemetry/sdk-node")
-const { getNodeAutoInstrumentations } = require("@opentelemetry/auto-instrumentations-node")
-const { OTLPTraceExporter } =  require('@opentelemetry/exporter-trace-otlp-grpc')
+const { getNodeAutoInstrumentations } = require("@opentelemetry/auto-instrumentations-node");
+const { OTLPTraceExporter } =  require('@opentelemetry/exporter-trace-otlp-grpc');
 const { Resource } = require('@opentelemetry/resources');
 const { SemanticResourceAttributes } = require('@opentelemetry/semantic-conventions');
+
+
+
 
 // Define the resource for the SDK, including the service name using a string key
 const resource = new Resource({
@@ -17,14 +20,14 @@ const resource = new Resource({
 const sdk = new opentelemetry.NodeSDK({
   resource: resource,
   traceExporter: new OTLPTraceExporter(),
-  instrumentations: [ getNodeAutoInstrumentations() ]
+  instrumentations: [ getNodeAutoInstrumentations({
+      // We recommend disabling fs automatic instrumentation because 
+      // it can be noisy and expensive during startup
+      '@opentelemetry/instrumentation-fs': {
+        enabled: false,
+      },
+    })]
 })
 
-sdk.start()
 
-process.on('SIGTERM', () => {
-  sdk.shutdown()
-    .then(() => console.log('Tracing terminated'))
-    .catch((error) => console.log('Error terminating tracing', error))
-    .finally(() => process.exit(0));
-});
+sdk.start()
