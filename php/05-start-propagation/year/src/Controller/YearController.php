@@ -6,6 +6,7 @@ require __DIR__ . '/../../vendor/autoload.php';
 
 use App\OpenTelemetry\HasTraceableTrait;
 use App\OpenTelemetry\SdkBuilder;
+use GuzzleHttp\Client;
 use OpenTelemetry\API\Signals;
 use OpenTelemetry\API\Trace\Propagation\TraceContextPropagator;
 use OpenTelemetry\API\Trace\SpanInterface;
@@ -22,9 +23,8 @@ use OpenTelemetry\SDK\Trace\SpanProcessor\BatchSpanProcessor;
 use OpenTelemetry\SDK\Trace\TracerProvider;
 use OpenTelemetry\SemConv\ResourceAttributes;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Attribute\Route;
 
 
 class YearController extends AbstractController
@@ -32,8 +32,8 @@ class YearController extends AbstractController
     use HasTraceableTrait;
 
     private TracerProvider $tracerProvider;
-
     private ?SpanInterface $span, $root, $scope = null;
+    private Client $client;
 
     #[Route('/year', name: 'app_year')]
     public function index(): Response
@@ -166,10 +166,20 @@ class YearController extends AbstractController
 
     function getRandomYear(): int
     {
-        $currentYear = date("Y"); // Get the current year
-        usleep(rand(0, 5000)); // Simulate a small delay
-        $randomYear = rand(2015, $currentYear); // Get a random year between 2015 and current year
-        return $randomYear;
+        $this->client = new Client([
+            'base_uri' => 'http://year-service:3001',
+            'timeout' => 5.0,
+        ]);
+
+        try {
+            $response = $this->client->request('GET', '/year');
+            $bodyAsString = (string) $response->getBody(); // Convert the Stream to a string
+            return (int) $bodyAsString; // Now safely convert the string to an integer
+        } catch (\Exception $e) {
+            echo "" . $e->getMessage() . "";
+            // Handle the exception or log it
+            return 1900; // Default year in case of error
+        }
     }
 
     private function createHtmlResponse(string $message): Response

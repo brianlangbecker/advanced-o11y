@@ -7,6 +7,7 @@
         "php": ">=8.2",
         "ext-ctype": "*",
         "ext-iconv": "*",
+        "guzzlehttp/guzzle": "^7.8",
         "guzzlehttp/promises": "^2.0",
         "nyholm/psr7": "^1.8",
         "open-telemetry/api": "*",

@@ -14,7 +14,7 @@ x-common-env: &common-env
 
 services:
   year:
-    build: .
+    build: ./year
     ports:
       - "6001:6001"
     volumes:
@@ -23,4 +23,9 @@ services:
     environment:
       <<: *common-env
     # Development environment variables
-
+  year-service:
+    build: ./year-service
+    environment:
+      <<: *common-env
+    ports:
+      - 3001:3001
