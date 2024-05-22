@@ -1,0 +1,24 @@
+#!/bin/sh
+
+# Run to start the whole system up, 5 services (one is nginx)
+# `./run`
+# Or, run with a parameter service name (from docker-compose) to restart just that service
+# `./run meminator`
+
+set -x # print what you run
+
+# Define an array of service directories
+services=("./services/backend-for-frontend")
+
+# Loop through each service directory and run bundle install
+for service in "${services[@]}"
+do
+  echo "Running bundle install for $service"
+  cd $service
+  bundle install
+  cd - > /dev/null
+done
+
+docker compose up --build -d $*
+
+echo "http://localhost:8080"

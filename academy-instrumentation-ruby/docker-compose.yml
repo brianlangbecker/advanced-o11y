@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  backend-for-frontend:
+    build: ./services/backend-for-frontend
+    ports:
+      - "10115:10114"
+    environment:
+      - HONEYCOMB_API_KEY=${HONEYCOMB_API_KEY}
+      - BUCKET_NAME=${BUCKET_NAME}
+      - OTEL_EXPORTER_OTLP_ENDPOINT=${OTEL_EXPORTER_OTLP_ENDPOINT}
+      - OTEL_EXPORTER_OTLP_HEADERS=${OTEL_EXPORTER_OTLP_HEADERS}
+      - OTEL_SERVICE_NAME=backend-for-frontend
