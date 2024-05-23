@@ -99,7 +99,7 @@ class YearController extends AbstractController
         // Create a span with a random year as an attribute
         $loop->addTimer(.000000000001, function () use ($tracer, $name) {
             $span = $tracer->spanBuilder($name)->startSpan();
-            $span->setAttribute('year', $this->getRandomYear());
+            $span->setAttribute('dc.year', $this->getRandomYear());
             $span->end();
         });
     }
