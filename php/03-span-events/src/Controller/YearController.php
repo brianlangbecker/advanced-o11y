@@ -30,7 +30,6 @@ use Symfony\Component\HttpFoundation\Response;
 class YearController extends AbstractController
 {
     use HasTraceableTrait;
-
     private TracerProvider $tracerProvider;
 
     private ?SpanInterface $span, $root, $scope = null;
