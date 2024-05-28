@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  backend-for-frontend:
+    build: ./services/backend-for-frontend
+    ports:
+      - "10115:10114"
+    environment:
+      - HONEYCOMB_API_KEY=${HONEYCOMB_API_KEY}
+      - BUCKET_NAME=${BUCKET_NAME}
+      - OTEL_EXPORTER_OTLP_ENDPOINT=${OTEL_EXPORTER_OTLP_ENDPOINT}
+      - OTEL_EXPORTER_OTLP_HEADERS=${OTEL_EXPORTER_OTLP_HEADERS}
+      - OTEL_SERVICE_NAME=backend-for-frontend
+
+  meminator:
+    build:
+      context: ./services/meminator-ruby
+      dockerfile: Dockerfile
+    ports:
+      - "10116:10114" # they can't be the same
+    environment:
+      - OTEL_EXPORTER_OTLP_ENDPOINT
+      - OTEL_EXPORTER_OTLP_HEADERS
+      - OTEL_SERVICE_NAME=meminator-ruby
+
+  phrase-picker:
+    build:
+      context: ./services/phrase-picker-ruby
+      dockerfile: Dockerfile
+    ports:
+      - "10117:10114" # the outer ports can't be the same
+    environment:
+      - OTEL_EXPORTER_OTLP_ENDPOINT
+      - OTEL_EXPORTER_OTLP_HEADERS
+      - OTEL_SERVICE_NAME=phrase-picker-ruby
+
+  image-picker:
+    build:
+      context: ./services/image-picker-ruby
+      dockerfile: Dockerfile
+    ports:
+      - "10118:10114" # the outer ports can't be the same
+    environment:
+      - BUCKET_NAME
+      - OTEL_EXPORTER_OTLP_ENDPOINT
+      - OTEL_EXPORTER_OTLP_HEADERS
+      - OTEL_SERVICE_NAME=image-picker-ruby
+

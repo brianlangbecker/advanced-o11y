@@ -2,11 +2,11 @@
 
 source 'https://rubygems.org'
 
+gem 'sinatra'
 gem 'dotenv'
-gem 'opentelemetry-exporter-otlp'
-gem 'opentelemetry-instrumentation-all'
+gem 'aws-sdk-s3'
 gem 'opentelemetry-sdk'
+gem 'opentelemetry-exporter-otlp'
 gem 'rack'
 gem 'rackup'
-gem 'sinatra'
 gem 'uri'

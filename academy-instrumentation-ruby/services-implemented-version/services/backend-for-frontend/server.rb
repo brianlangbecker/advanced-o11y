@@ -1,10 +1,30 @@
+
+require "bundler/setup"
+Bundler.require
+
+require 'opentelemetry/sdk'
+require 'opentelemetry/exporter/otlp'
+require 'opentelemetry/instrumentation/all'
 require 'sinatra'
 require 'net/http'
 require 'json'
+
 require_relative 'o11yday_lib'  # Ensure this is the correct path to your helper file
 
 configure do
   set :port, 10114
+end
+
+begin
+  OpenTelemetry::SDK.configure do |c|
+    c.service_name = "backend-for-frontend"
+
+    # Enable all auto-instrumentation available
+    c.use_all()
+  end
+rescue OpenTelemetry::SDK::ConfigurationError => e
+  puts "What now?"
+  puts e.inspect
 end
 
 get '/health' do
@@ -14,11 +34,14 @@ end
 
 post '/createPicture' do
   begin
+    current_span = OpenTelemetry::Trace.current_span
     phrase_response = fetch_from_service('phrase-picker')
     image_response = fetch_from_service('image-picker')
 
     phrase_text = phrase_response.is_a?(Net::HTTPSuccess) ? phrase_response.body : "{}"
     image_text = image_response.is_a?(Net::HTTPSuccess) ? image_response.body : "{}"
+    current_span.set_attribute("app.phrase", phrase_text);
+    current_span.set_attribute("app.image_url", image_text);
 
     phrase_result = JSON.parse(phrase_text)
     image_result = JSON.parse(image_text)

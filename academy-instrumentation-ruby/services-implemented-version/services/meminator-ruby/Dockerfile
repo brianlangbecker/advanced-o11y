@@ -4,10 +4,15 @@ FROM ruby:3.0
 # Set the working directory inside the container
 WORKDIR /app
 
+# Install dependencies
+RUN apt-get update && \
+    apt-get install -y imagemagick && \
+    rm -rf /var/lib/apt/lists/*
+
 # Copy the Gemfile and Gemfile.lock into the container
 COPY Gemfile Gemfile.lock ./
 
-# Install the dependencies
+# Install the Ruby dependencies
 RUN bundle install
 
 # Copy the rest of the application code into the container
@@ -17,4 +22,4 @@ COPY . .
 EXPOSE 10114
 
 # Set the command to run the app
-CMD ["ruby", "server.rb", "-o", "0.0.0.0", "-p", "10114"]
+CMD ["ruby", "main.rb", "-o", "0.0.0.0", "-p", "10114"]
