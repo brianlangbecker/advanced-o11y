@@ -1,4 +1,3 @@
-
 require "bundler/setup"
 Bundler.require
 
@@ -64,3 +63,5 @@ post '/createPicture' do
     halt 500, 'Internal Server Error'
   end
 end
+
+use OpenTelemetry::Instrumentation::Rack::Middlewares::TracerMiddleware

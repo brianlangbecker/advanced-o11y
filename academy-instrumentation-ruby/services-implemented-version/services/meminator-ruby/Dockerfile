@@ -22,4 +22,4 @@ COPY . .
 EXPOSE 10114
 
 # Set the command to run the app
-CMD ["ruby", "main.rb", "-o", "0.0.0.0", "-p", "10114"]
+CMD ["ruby", "server.rb", "-o", "0.0.0.0", "-p", "10114"]

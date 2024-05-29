@@ -6,16 +6,16 @@ require 'opentelemetry/sdk'
 require 'opentelemetry/exporter/otlp'
 require 'opentelemetry/instrumentation/all'
 
-begin
-  OpenTelemetry::SDK.configure do |c|
-    c.service_name = 'year-ruby'
+#begin
+#  OpenTelemetry::SDK.configure do |c|
+#    c.service_name = 'year-ruby'
     # Enable all auto-instrumentation available
-    c.use_all
-  end
-rescue OpenTelemetry::SDK::ConfigurationError => e
-  puts 'What now?'
-  puts e.inspect
-end
+#    c.use_all
+#  end
+#rescue OpenTelemetry::SDK::ConfigurationError => e
+#  puts 'What now?'
+#  puts e.inspect
+#end
 
 Tracer = OpenTelemetry.tracer_provider.tracer('year-internal')
 
