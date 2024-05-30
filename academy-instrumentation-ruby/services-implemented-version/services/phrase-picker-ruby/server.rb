@@ -9,9 +9,14 @@ require 'json'
 require 'securerandom'
 
 # Configure OpenTelemetry
-OpenTelemetry::SDK.configure do |c|
-  c.use_all() # enables all instrumentation
-end
+  begin
+    OpenTelemetry::SDK.configure do |c|
+      c.service_name = ENV['SERVICE_NAME'] || "phrase-picker-ruby"
+      c.use_all
+    end
+  rescue StandardError => e
+    puts "OpenTelemetry configuration failed: #{e.message}"
+  end
 
 PHRASES = [
   'you\'re muted',

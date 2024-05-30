@@ -1,3 +1,9 @@
+require "bundler/setup"
+Bundler.require
+
+require 'opentelemetry/sdk'
+require 'opentelemetry/exporter/otlp'
+require 'opentelemetry/instrumentation/all'
 require 'sinatra'
 require 'json'
 require 'net/http'
@@ -5,6 +11,17 @@ require 'uri'
 require 'open-uri'
 require 'mini_magick'
 require 'logger'
+require 'fileutils'
+
+# Configure OpenTelemetry
+begin
+  OpenTelemetry::SDK.configure do |c|
+    c.service_name = ENV['SERVICE_NAME'] || "meminator-ruby"
+    c.use_all
+  end
+rescue StandardError => e
+  puts "OpenTelemetry configuration failed: #{e.message}"
+end
 
 # Set up the logger to output to stdout
 configure do
@@ -33,14 +50,31 @@ end
 
 post '/applyPhraseToPicture' do
   content_type :json
-  input = JSON.parse(request.body.read)
+  input = JSON.parse(request.body.read) rescue {"phrase" => "I got you"}
   input_phrase = input['phrase']
   image_url = input['imageUrl']
   phrase = input_phrase.upcase
 
   begin
-    # download the image, defaulting to a local image
+    current_span = OpenTelemetry::Trace.current_span
+    current_span.set_attribute("app.meminator.phrase", phrase)
+
+    # Download the image, defaulting to a local image
     input_image_path = download(image_url)
+
+    # Check if the file exists
+    unless File.exist?(input_image_path)
+      current_span.add_event(
+        "image_not_found",
+        attributes: {
+          "input_image_path" => input_image_path,
+          "imageUrl" => image_url
+        }
+      )
+      current_span.set_status(OpenTelemetry::Trace::Status.new(OpenTelemetry::Trace::Status::ERROR))
+      status 500
+      return 'Downloaded image file not found'
+    end
 
     if FeatureFlags.new.use_library?
       output_buffer = apply_text_with_library(input_image_path, phrase)
@@ -68,17 +102,31 @@ def download(image_url)
 end
 
 def apply_text_with_imagemagick(phrase, input_image_path)
-  image = MiniMagick::Image.open(input_image_path)
-  image.combine_options do |c|
-    c.gravity 'Center'
-    c.font 'DejaVu-Sans'  # Specify DejaVu Sans font
-    c.draw "text 0,0 '#{phrase}'"
-    c.fill 'black'
-    c.pointsize '50'
+  begin
+    image = MiniMagick::Image.open(input_image_path)
+    image.combine_options do |c|
+      c.gravity 'Center'
+      c.font 'DejaVu-Sans'  # Specify DejaVu Sans font
+      c.draw "text 0,0 '#{phrase}'"
+      c.fill 'black'
+      c.pointsize '150'
+    end
+    output_image_path = File.join(Dir.tmpdir, "output_#{File.basename(input_image_path)}")
+    image.write(output_image_path)
+    output_image_path
+  rescue => e
+    current_span = OpenTelemetry::Trace.current_span
+    current_span.add_event("convert_subprocess_failed", attributes: {
+      "command" => "convert -gravity Center -font DejaVu-Sans -draw 'text 0,0 #{phrase}' -fill black -pointsize 150",
+      "input_image_path" => input_image_path,
+      "error" => e.message
+    })
+    current_span.set_status(OpenTelemetry::Trace::Status.new(OpenTelemetry::Trace::Status::ERROR))
+    current_span.record_exception(e)
+    STDERR.puts "An error occurred: #{e.message}"
+    status 500
+    'An error occurred generating your image, sorry'
   end
-  output_image_path = File.join(Dir.tmpdir, "output_#{File.basename(input_image_path)}")
-  image.write(output_image_path)
-  output_image_path
 end
 
 def apply_text_with_library(input_image_path, phrase)

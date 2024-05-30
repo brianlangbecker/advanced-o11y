@@ -16,14 +16,11 @@ end
 
 begin
   OpenTelemetry::SDK.configure do |c|
-    c.service_name = "backend-for-frontend-ruby"
-
-    # Enable all auto-instrumentation available
-    c.use_all()
+    c.service_name = ENV['SERVICE_NAME'] || "backend-for-frontend-ruby"
+    c.use_all
   end
-rescue OpenTelemetry::SDK::ConfigurationError => e
-  puts "What now?"
-  puts e.inspect
+rescue StandardError => e
+  puts "OpenTelemetry configuration failed: #{e.message}"
 end
 
 get '/health' do
