@@ -1,6 +1,17 @@
+require "bundler/setup"
+Bundler.require
+
+require 'opentelemetry/sdk'
+require 'opentelemetry/exporter/otlp'
+require 'opentelemetry/instrumentation/all'
 require 'sinatra'
 require 'json'
 require 'securerandom'
+
+# Configure OpenTelemetry
+OpenTelemetry::SDK.configure do |c|
+  c.use_all() # enables all instrumentation
+end
 
 PHRASES = [
   'you\'re muted',
@@ -40,3 +51,5 @@ end
 # Start the server
 set :port, 10114
 set :bind, '0.0.0.0'
+
+use OpenTelemetry::Instrumentation::Rack::Middlewares::TracerMiddleware

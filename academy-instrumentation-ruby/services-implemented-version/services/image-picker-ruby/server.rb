@@ -70,7 +70,7 @@ class App < Sinatra::Base
 
   begin
     OpenTelemetry::SDK.configure do |c|
-      c.service_name = ENV['SERVICE_NAME'] || "image-service"
+      c.service_name = ENV['SERVICE_NAME'] || "image-service-ruby"
       c.use_all
     end
   rescue StandardError => e

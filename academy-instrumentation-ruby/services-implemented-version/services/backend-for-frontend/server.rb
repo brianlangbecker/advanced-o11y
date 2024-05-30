@@ -16,7 +16,7 @@ end
 
 begin
   OpenTelemetry::SDK.configure do |c|
-    c.service_name = "backend-for-frontend"
+    c.service_name = "backend-for-frontend-ruby"
 
     # Enable all auto-instrumentation available
     c.use_all()
