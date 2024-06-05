@@ -1,52 +1,81 @@
-# Academy Instrumentation Ruby
+# Honeycomb Academy: Sample Meminator App
 
-This project is a Ruby version of the Honeycomb.io Academy Instrumentation example. It sets up a simple Sinatra-based backend service with OpenTelemetry instrumentation and integrates with AWS S3 for image handling.
+This contains a sample application for use in Honeycomb Academy lab activities. This app has 4 services.
 
-## Setup
+It generates images by combining a randomly chosen picture with a randomly chosen phrase.
 
-### Prerequisites
+## Introduction
 
-- Ruby (preferably installed via a version manager like `rbenv` or `rvm`)
-- Docker
-- Git
+Hello! Welcome to the **Instrumenting with Ruby** course lab.
 
-### Configuration
+1. Take a look at this app. The `backend-for-frontend` service needs to be instrumented.
+2. Before you can do that, you need to run this app.
+3. Then, connect this app to Honeycomb.
+4. See what the traces look like.
+5. Improve the traces.
 
-These will be updated in the .env file discussed below
+## Running the application
 
-- HONEYCOMB_API_KEY: Your Honeycomb API key.
-- BUCKET_NAME: The name of your S3 bucket containing images.
-- OTEL_EXPORTER_OTLP_ENDPOINT: The OpenTelemetry collector endpoint.
-- OTEL_EXPORTER_OTLP_HEADERS: Headers required for the OpenTelemetry collector.
+To run this app, you can use GitPod or Codespaces.
 
-### Installation
+Once you run the application, you can send traces to Honeycomb. Then you can practice improving the instrumentation for better observability.
 
-1. **Clone the repository:**
+### GitPod setup
 
-   ```sh
-   git clone https://github.com/yourusername/academy-instrumentation-ruby.git
-   cd academy-instrumentation-ruby
-   ```
+Go to [Gitpod](https://gitpod.io/#https://github.com/honeycombio/academy-instrumentation-python) to launch this project in Gitpod.
 
-2. **Set up the environment variables:**
+Confirm the workspace creation. You can work in the browser with VS Code Browser or in your local code editor. The default settings are acceptable.
 
-   - Copy the example environment file and update it with your Honeycomb API key.
+Once you are in the code editor, run `docker compose up` in the code editor's terminal. To stop running the application, run `ctrl+c`. Then run `docker compose down` to remove the container.
 
-   ```sh
-   cp .env.example .env
-   # Edit .env to add your Honeycomb API key and other configuration
-   ```
+### Codespaces setup
 
-3. **Install the dependencies:**
-   ```sh
-   bundle install
-   ```
+Open the repository on GitHub. Open the `<> Code` dropdown down menu.
+
+Select the `Codespaces` tab. Create a codespace on main.
+
+### Local development setup
+
+You also have the option to run this application locally.
+
+First, clone this repository.
+
+```bash
+git clone https://github.com/brianlangbecker/advanced-o11y.git
+cd academy-instrumentation-ruby
+```
+
+Install Docker: https://docs.docker.com/get-docker/
+
+Create a `.env` file from the example:
+
+```bash
+cp example.env .env
+```
+
+And update the `.env` file with your Honeycomb API key:
+
+```bash
+HONEYCOMB_API_KEY="your-api-key"
+
+# you could change this to your own S3 bucket of images. We accept no responsibility for the outcome.
+# Note: "random-pictures" is an actual S3 bucket name supplied for this course, filled with SFW meme images
+BUCKET_NAME="random-pictures"
+
+OTEL_EXPORTER_OTLP_ENDPOINT="https://api.honeycomb.io:443/"
+OTEL_EXPORTER_OTLP_HEADERS="x-honeycomb-team=${HONEYCOMB_API_KEY}"
+
+# You can set this to "services-implemented-version" to run the answer-guide version
+SERVICE_PATH="services"
+```
+
+If you don't have an API key handy, here is the [documentation](https://docs.honeycomb.io/get-started/configure/environments/manage-api-keys/#create-api-key).
 
 ### Run the app
 
 `./run`
 
-(This will run `docker compose` in daemon mode, and build containers.)
+(This will run `docker compose` in daemon mode, and build containers. Note, if you run this directly you need to do a `bundle install` in each services file.)
 
 Access the app:
 
@@ -61,11 +90,3 @@ After making changes to a service, you can tell it to rebuild just that one:
 Visit [http://localhost:8080]()
 
 Click the "GO" button. Then wait.
-
-### Using Docker
-
-To run the application using Docker, first ensure Docker is installed on your machine. Then you can build and run the application using Docker Compose:
-
-```sh
-docker-compose up --build
-```

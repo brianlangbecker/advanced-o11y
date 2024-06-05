@@ -7,17 +7,21 @@
 
 set -x # print what you run
 
+if [ -f .env ]; then
+  export $(cat .env | xargs)
+fi
+
 # Define an array of service directories
 services=("./services/backend-for-frontend")
 
 # Loop through each service directory and run bundle install
-for service in "${services[@]}"
-do
-  echo "Running bundle install for $service"
-  cd $service
-  bundle install
-  cd - > /dev/null
-done
+#for service in "${services[@]}"
+#do
+#  echo "Running bundle install for $service"
+#  cd $service
+#  bundle install
+#  cd - > /dev/null
+#done
 
 docker compose up --build -d $*
 
